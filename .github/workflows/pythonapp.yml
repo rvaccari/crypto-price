@@ -1,0 +1,24 @@
+name: Test Project
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+      - name: Setup Poetry
+        uses: Gr1N/setup-poetry@v4
+      - name: Install Python
+        run: |
+          make install
+      - name: Configure environment
+        run: |
+          make configure
+      - name: Run CI Tests
+        run: |
+          make ci
