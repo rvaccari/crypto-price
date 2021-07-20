@@ -7,6 +7,10 @@ install:
 configure:
 	poetry run python contrib/env_gen.py
 
+db-init:
+	poetry run python manage.py migrate
+	poetry run python manage.py import_data
+
 run:
 	poetry run python manage.py runserver
 
