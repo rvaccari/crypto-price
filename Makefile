@@ -44,3 +44,6 @@ docker-up:
 
 docker-stop:
 	docker-compose stop
+
+docker-db-init:
+	docker-compose run web bash -c "sleep 5 && poetry run python manage.py migrate && poetry run python manage.py import_data"

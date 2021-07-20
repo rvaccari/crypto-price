@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:12-alpine
+    environment:
+      - POSTGRES_DB=cryptodb
+      - POSTGRES_USER=crypto
+      - POSTGRES_PASSWORD=crypto
+    ports:
+    - "5484:5432"
+    volumes:
+      - cryptodb-postgres:/var/lib/postgresql/data
+  web:
+    restart: always
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: "postgres://crypto:crypto@postgres:5432/cryptodb"
+      DISCOUNT_SERVICE_URL: 'discount-service:50051'
+    command: gunicorn backend.wsgi:application -w 2 -b :8000
+volumes:
+  cryptodb-postgres:
