@@ -15,35 +15,35 @@ class TestMmsApiGet:
         return historic
 
     def test_mms_invalid_filter_from_must_return_422(self, client):
-        resp = client.get("/BRLBTC/mms?from=1&range=200", content_type="application/json")
+        resp = client.get("/v1/BRLBTC/mms?from=1&range=200", content_type="application/json")
         assert resp.status_code == 422
 
     def test_mms_invalid_filter_to_must_return_422(self, client):
-        resp = client.get("/BRLBTC/mms?to=1&range=200", content_type="application/json")
+        resp = client.get("/v1/BRLBTC/mms?to=1&range=200", content_type="application/json")
         assert resp.status_code == 422
 
     def test_mms_filter_from_prior_to_365_must_return_422(self, client):
         ts_from = int(datetime.datetime.timestamp(arrow.now().floor("day").datetime - datetime.timedelta(days=400)))
-        resp = client.get(f"/BRLBTC/mms?from={ts_from}&range=1", content_type="application/json")
+        resp = client.get(f"/v1/BRLBTC/mms?from={ts_from}&range=1", content_type="application/json")
         assert resp.status_code == 422
 
     def test_mms_invalid_filter_range_must_return_422(self, client):
-        resp = client.get("/BRLBTC/mms?range=1", content_type="application/json")
+        resp = client.get("/v1/BRLBTC/mms?range=1", content_type="application/json")
         assert resp.status_code == 422
 
     def test_mms_status_code_200(self, client, historic):
-        resp = client.get(f"/{PAIRS.BRLBTC.value}/mms?range=200", content_type="application/json")
+        resp = client.get(f"/v1/{PAIRS.BRLBTC.value}/mms?range=200", content_type="application/json")
         assert resp.status_code == 200
 
     def test_mms_200_return_valid_mms(self, client, historic):
         ts_from = int(datetime.datetime.timestamp(arrow.now().floor("day").datetime - datetime.timedelta(days=2)))
-        resp = client.get(f"/{PAIRS.BRLBTC.value}/mms?from={ts_from}&range=200", content_type="application/json")
+        resp = client.get(f"/v1/{PAIRS.BRLBTC.value}/mms?from={ts_from}&range=200", content_type="application/json")
         expected = [{"timestamp": historic.timestamp, "mms": historic.mms_200}]
         assert resp.json() == expected
 
     def test_no_value_in_database_return_empty(self, client, db):
         ts_from = int(datetime.datetime.timestamp(arrow.now().floor("day").datetime - datetime.timedelta(days=2)))
-        resp = client.get(f"/{PAIRS.BRLETH.value}/mms?from={ts_from}&range=200", content_type="application/json")
+        resp = client.get(f"/v1/{PAIRS.BRLETH.value}/mms?from={ts_from}&range=200", content_type="application/json")
         expected = []
         assert resp.json() == expected
 
@@ -54,6 +54,6 @@ class TestMmsApiGet:
             historic.save()
 
         ts_from = int(datetime.datetime.timestamp(arrow.now().floor("day").datetime - datetime.timedelta(days=2)))
-        resp = client.get(f"/{PAIRS.BRLBTC.value}/mms?from={ts_from}&range=200", content_type="application/json")
+        resp = client.get(f"/v1/{PAIRS.BRLBTC.value}/mms?from={ts_from}&range=200", content_type="application/json")
 
         assert len(resp.json()) == 2
